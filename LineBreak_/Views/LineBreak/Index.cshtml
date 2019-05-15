@@ -1,0 +1,88 @@
+﻿@model LineBreak_.Models.LineBreak
+@{
+    ViewBag.Title = "LineBreak";
+}
+
+<div class="jumbotron col-md-12">
+    <h3>Bienvenido a LineBreak.</h3>
+    <p>El programa funciona con dos parámetros: un texto y un número entero.
+    Se deben introducir ambos para conseguir así que el texto sea dividido
+    como máximo entre tantas líneas como el entero que le hayamos indicado.
+    Además en cada línea apareceran hasta como máximo tantos caracteres como
+    le hayamos indicado a través del numero entero separando en sílabas si
+    así se requiere para completar las frases de manera óptima. Podrá
+    comprobar que el programa realiza una serie de comprobaciones para
+    asegurar que se establecen los valores oportunos para un correcto LineBreak.
+    </p>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "formulario" }))
+    {
+        <br />
+        <div class="col-md-6">
+            <p>Introduzca el texto:</p>
+            @Html.TextBoxFor(LineBreak_ => LineBreak_.Texto, new
+   {
+       @id = "texto"
+   })
+        </div>
+        
+        <div class="col-md-6">
+            <p>Introduzca el número:</p>
+            @Html.TextBoxFor(LineBreak_ => LineBreak_.Numero, new { @id = "numero" })
+        </div>
+        
+        //<input type="submit" name="submit" />
+    }
+</div>
+<div>
+    <h3>Resultado:</h3>
+</div>
+<div id="resultado">
+    @{
+        foreach (string fila in Model.Resultado)
+        {
+                    @fila
+            <br />
+        }
+    }
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('form').submit(function () {
+
+            $.ajax({
+                url: '@Url.Action("Index")',
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    Numero: $('#numero').val(),
+                    Texto: $('#texto').val(),
+                    Resultado: $('#resultado').val()
+                }),
+                success: function (result) {
+                    fLen = result.Resultado.length;
+                    text = "";
+                    for (i = 0; i < fLen; i++) {
+                        text += result.Resultado[i] + "<br />";
+                    }
+                    document.getElementById("resultado").innerHTML = text;
+                },
+                error: function (result) {
+                            alert("Failed");
+                        }
+                    });
+          return false;
+         });
+
+        $('#texto').bind('keyup', function () {
+            $('#formulario').delay(200).submit();
+        });
+        $('#numero').bind('keyup', function () {
+            $('#formulario').delay(200).submit();
+        });
+    });
+
+</script>
